@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+    postgres:
+        image: postgres
+        environment: 
+            - POSTGRES_PASSWORD=notarealpassword
+            - POSTGRES_DB=mydb
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+    reset:
+        depends_on: 
+            - postgres
+        build:
+            context: ./reset_db
+        environment: 
+            - DB_URI=postgresql+psycopg2://postgres:notarealpassword@postgres:5432/postgres
+    sqlite_counter:
+        depends_on: 
+            - reset
+        build:
+            context: ./app
+        deploy:
+            mode: replicated
+            replicas: 10
+        environment: 
+            - DB_URI=postgresql+psycopg2://postgres:notarealpassword@postgres:5432/postgres
+volumes:
+    postgres_data:

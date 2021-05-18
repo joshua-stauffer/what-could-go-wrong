@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+    reset:
+        build:
+            context: ./reset_db
+        volumes:
+            - sqlite:/data
+        environment: 
+            - DB_URI=sqlite:////data/chaos.db
+    sqlite_counter:
+        depends_on: 
+            - reset
+        build:
+            context: ./app
+        volumes:
+            - sqlite:/data
+        deploy:
+            mode: replicated
+            replicas: 1
+        environment: 
+            - DB_URI=sqlite:////data/chaos.db
+volumes:
+    sqlite:
