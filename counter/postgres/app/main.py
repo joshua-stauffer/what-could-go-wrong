@@ -29,9 +29,16 @@ def get_db_conn(error_count, error_log):
                         DB_URI,
                         echo=False, # set this to True to see the SQL being emitted
                         future=True,
-                        # isolation level determines how SQLite handles transactions
-                        # options are SERIALIZABLE, READ UNCOMMITTED, AUTOCOMMIT
-                        isolation_level="SERIALIZABLE") 
+                        # isolation level determines how Postgres handles transactions
+                        # options are 
+                        #   SERIALIZABLE            100%
+                        #   REPEATABLE READ         100%
+                        #   READ COMMITTED        ~ 75%
+                        #   AUTOCOMMIT            ~ 40%
+                        #   READ UNCOMMITTED      ~ 35%
+                        #   DEFAULT (READ COMMITTED)
+                        isolation_level="DEFAULT"
+            ) 
             Base.metadata.create_all(engine)
             return engine
         except Exception as e:
